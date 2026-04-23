@@ -1,0 +1,81 @@
+{% from "macros/expected_args.html" import expected_arguments %}
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Taskiq Dashboard — Run {{ task_name }}</title>
+    <meta name="description" content="Run a registered task with arguments"/>
+    <meta name="keywords" content="python, taskiq, tasks"/>
+    {% include "partial/head.html" %}
+</head>
+<body class="bg-ctp-base text-ctp-text">
+{% include "partial/header.html" %}
+<main class="container mx-auto px-4 py-8">
+    <form
+            hx-post="{{ url_for('run_task', task_name=task_name) }}"
+            hx-target="#notification-list"
+            hx-swap="beforeend"
+    >
+        <section class="p-6 mb-6 bg-ctp-lavender/10 rounded-xl">
+            <div class="flex justify-between items-start mb-4">
+                <div class="mb-4 pb-4">
+                    <h1 class="font-bold text-xl">Run task</h1>
+                    <p class="font-light">Enqueue a single run of this task with the given arguments</p>
+                </div>
+                <div class="flex items-center gap-2 text-ctp-base">
+                    <button
+                            type="submit"
+                            class="px-3 py-1.5 bg-ctp-blue rounded cursor-pointer hover:bg-ctp-blue-600 transition focus:outline-2 focus:outline-offset-2 focus:outline-ctp-blue-500 active:bg-ctp-blue-700"
+                    >
+                        Run
+                    </button>
+                    <a
+                            href="{{ url_for('task_list_view') }}"
+                            class="px-3 py-1.5 bg-ctp-surface2 rounded cursor-pointer hover:bg-ctp-surface1 transition focus:outline-2 focus:outline-offset-2 focus:outline-ctp-surface2 active:bg-ctp-base text-ctp-text"
+                    >
+                        Cancel
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div>
+                    <h3 class="mb-2">Task name</h3>
+                    <p class="font-light font-mono">{{ task_name }}</p>
+                </div>
+            </div>
+        </section>
+
+        {{ expected_arguments(signature) }}
+
+        <section class="p-6 mb-6 bg-ctp-lavender/10 rounded-xl">
+            <div class="mb-4 pb-4">
+                <h2 class="font-bold text-xl">Task arguments</h2>
+                <p class="font-light">Positional and keyword arguments passed to the task</p>
+            </div>
+
+            <div class="mb-4">
+                <h3 class="mb-2 font-normal">Positional arguments</h3>
+                <textarea
+                        name="args"
+                        rows="4"
+                        class="w-full px-3 py-2 bg-ctp-base border border-ctp-surface2 rounded text-ctp-text font-mono text-sm focus:outline-none focus:border-ctp-blue"
+                        placeholder='[]'
+                >[]</textarea>
+            </div>
+
+            <div class="mb-4">
+                <h3 class="mb-2 font-normal">Keyword arguments</h3>
+                <textarea
+                        name="kwargs"
+                        rows="4"
+                        class="w-full px-3 py-2 bg-ctp-base border border-ctp-surface2 rounded text-ctp-text font-mono text-sm focus:outline-none focus:border-ctp-blue"
+                        placeholder='{}'
+                >{}</textarea>
+            </div>
+        </section>
+    </form>
+</main>
+
+<div id="notification-list" class="fixed bottom-6 right-6 flex flex-col gap-3 w-fit"></div>
+</body>
+</html>

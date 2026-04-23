@@ -8,8 +8,20 @@
 <script defer src="{{ url_for('static', path='htmx.js') }}"></script>
 <script defer src="{{ url_for('static', path='alpine.js') }}"></script>
 <script>
+    document.addEventListener('click', function (event) {
+        const row = event.target.closest('tr[data-href]');
+        if (!row) return;
+        if (event.target.closest('a, input, button, label, select, textarea')) return;
+        if (event.metaKey || event.ctrlKey) {
+            window.open(row.dataset.href, '_blank');
+        } else {
+            window.location.href = row.dataset.href;
+        }
+    });
+</script>
+<script>
     (function () {
-        var THEMES = {
+        const THEMES = {
             latte: 1,
             frappe: 1,
             macchiato: 1,
@@ -17,8 +29,8 @@
             auto: 1,
         };
         try {
-            var isAuto = localStorage.getItem("theme-auto") === "true";
-            var t = localStorage.getItem("theme");
+            const isAuto = localStorage.getItem("theme-auto") === "true";
+            const t = localStorage.getItem("theme");
             if (!t || !THEMES[t] || isAuto) {
                 t = matchMedia("(prefers-color-scheme: dark)").matches ? "mocha" : "latte";
             }

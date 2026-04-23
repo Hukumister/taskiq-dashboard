@@ -21,7 +21,7 @@ logger = getLogger(__name__)
 
 @router.post(
     '/{task_id}/{event}',
-    name='Receive task event',
+    name='receive_task_event',
 )
 async def handle_task_event(
     task_id: uuid.UUID,

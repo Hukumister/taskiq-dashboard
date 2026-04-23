@@ -19,7 +19,7 @@ class Task(pydantic.BaseModel):
     kwargs: dict[str, tp.Any] = pydantic.Field(default_factory=dict)
     labels: dict[str, tp.Any] = pydantic.Field(default_factory=dict)
 
-    result: dict | list | pydantic.Json | None = None
+    result: tp.Any = None
     error: str | None = None
 
     queued_at: datetime.datetime | None = None

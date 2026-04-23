@@ -1,4 +1,6 @@
-<tr id="task-list-item-{{ task.id }}" class="group whitespace-nowrap text-sm">
+<tr id="task-list-item-{{ task.id }}"
+    data-href="{{ url_for('task_details_view', task_id=task.id) }}"
+    class="group whitespace-nowrap text-sm cursor-pointer">
     <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">
         <input
             type="checkbox"
@@ -8,7 +10,7 @@
         >
     </td>
     <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">
-        <a href="{{ url_for('Task details view', task_id=task.id) }}" class="text-ctp-text hover:text-ctp-subtext0 block w-full h-full">
+        <a href="{{ url_for('task_details_view', task_id=task.id) }}" class="text-ctp-text hover:text-ctp-subtext0 block w-full h-full">
             {{ task.id }}
         </a>
     </td>

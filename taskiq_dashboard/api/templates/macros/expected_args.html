@@ -1,0 +1,56 @@
+{% macro expected_arguments(signature) -%}
+{% if signature.params or signature.has_var_args or signature.has_var_kwargs %}
+<section class="p-6 mb-6 bg-ctp-lavender/10 rounded-xl">
+    <div class="mb-4 pb-4">
+        <h2 class="font-bold text-xl">Expected arguments</h2>
+        <p class="font-light">Types declared in the task function signature</p>
+    </div>
+    <div class="bg-ctp-base rounded p-4 overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead class="text-ctp-subtext0 border-b border-ctp-surface1">
+                <tr>
+                    <th class="text-left pb-2 pr-4 font-normal">Name</th>
+                    <th class="text-left pb-2 pr-4 font-normal">Type</th>
+                    <th class="text-left pb-2 pr-4 font-normal">Required</th>
+                    <th class="text-left pb-2 pr-4 font-normal">Default</th>
+                    <th class="text-left pb-2 pr-4 font-normal">Choices</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for param in signature.params %}
+                    <tr class="border-b border-ctp-surface1/40">
+                        <td class="py-2 pr-4 font-mono">{{ param.name }}</td>
+                        <td class="py-2 pr-4 font-mono text-ctp-subtext1">{{ param.annotation or '—' }}</td>
+                        <td class="py-2 pr-4">
+                            {% if param.required %}
+                                <span class="text-ctp-red">yes</span>
+                            {% else %}
+                                <span class="text-ctp-subtext0">no</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-2 pr-4 font-mono text-ctp-subtext1">{{ param.default or '—' }}</td>
+                        <td class="py-2 pr-4 font-mono text-ctp-subtext1">
+                            {% if param.choices %}{{ param.choices | join(' | ') }}{% else %}—{% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                {% if signature.has_var_args %}
+                    <tr class="border-b border-ctp-surface1/40">
+                        <td class="py-2 pr-4 font-mono">*args</td>
+                        <td class="py-2 pr-4 font-mono text-ctp-subtext1">list</td>
+                        <td></td><td></td><td></td>
+                    </tr>
+                {% endif %}
+                {% if signature.has_var_kwargs %}
+                    <tr class="border-b border-ctp-surface1/40">
+                        <td class="py-2 pr-4 font-mono">**kwargs</td>
+                        <td class="py-2 pr-4 font-mono text-ctp-subtext1">dict</td>
+                        <td></td><td></td><td></td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endif %}
+{%- endmacro %}

@@ -2,7 +2,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-4 py-6">
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-8">
-                <a href="{{ url_for('Task list view') }}" class="group">
+                <a href="{{ url_for('task_history_view') }}" class="group">
                     <div class="flex flex-col items-center gap-2">
                         <div class="w-24 h-16 flex items-center justify-center">
                             <svg class="w-48 h-16" aria-hidden="true">
@@ -11,30 +11,20 @@
                         </div>
                     </div>
                 </a>
+                {% set _path = request.url.path %}
+                {% set _nav_base = "transition-colors font-medium" %}
+                {% set _nav_active = "text-ctp-mauve" %}
+                {% set _nav_idle = "text-ctp-text hover:text-ctp-mauve" %}
                 <nav class="hidden sm:flex items-center gap-6 ml-4 mt-2">
-                    <a href="{{ url_for('Task list view') }}" class="text-ctp-text hover:text-ctp-mauve transition-colors font-medium">Tasks</a>
-                    <a href="{{ url_for('Schedule list view') }}" class="text-ctp-text hover:text-ctp-mauve transition-colors font-medium">Schedules</a>
+                    <a href="{{ url_for('task_history_view') }}"
+                       class="{{ _nav_base }} {{ _nav_active if _path == '/' or _path.startswith('/history') else _nav_idle }}">History</a>
+                    <a href="{{ url_for('task_list_view') }}"
+                       class="{{ _nav_base }} {{ _nav_active if _path.startswith('/tasks') else _nav_idle }}">Tasks</a>
+                    <a href="{{ url_for('schedule_list_view') }}"
+                       class="{{ _nav_base }} {{ _nav_active if _path.startswith('/schedules') else _nav_idle }}">Schedulers</a>
                 </nav>
             </div>
             <div class="flex items-center gap-4">
-                <a href="https://github.com/danfimov/taskiq-dashboard"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   class="text-ctp-text hover:text-ctp-mauve transition-colors"
-                   title="GitHub">
-                    <svg class="w-5 h-5" aria-hidden="true">
-                        <use href="{{ url_for('static', path='icons.svg#github') }}"></use>
-                    </svg>
-                </a>
-                <a href="https://danfimov.github.io/taskiq-dashboard/"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   class="text-ctp-text hover:text-ctp-mauve transition-colors"
-                   title="Documentation">
-                    <svg class="w-5 h-5" aria-hidden="true">
-                        <use href="{{ url_for('static', path='icons.svg#book-open') }}"></use>
-                    </svg>
-                </a>
                 <!-- Theme switcher -->
                 <form id="flavour-switcher" class="flex items-center">
                     <label for="flavour" class="sr-only">Выбор темы</label>
@@ -62,7 +52,7 @@
         </div>
     </div>
     <script>
-        (function() {
+        (function () {
             const THEMES = new Set(["latte", "frappe", "macchiato", "mocha", "auto"]);
             const selectEl = document.getElementById("flavour");
             const chevronEl = document.getElementById("flavour-chevron");

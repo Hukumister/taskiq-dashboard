@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Taskiq Dashboard — Tasks</title>
+    <meta name="description" content="Registered tasks from the broker">
+    <meta name="keywords" content="python, taskiq, tasks">
+    {% include "partial/head.html" %}
+</head>
+<body class="bg-ctp-base">
+    {% include "partial/header.html" %}
+    <main class="container mx-auto pb-8">
+        <section class="overflow-x-auto mb-6 p-5">
+            <table id="task-list" class="min-w-full divide-y divide-ctp-blue/20 table-auto">
+                <thead>
+                    <tr class="sticky top-0">
+                        <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">Name</th>
+                        <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">Arguments</th>
+                        <th scope="col" class="px-6 py-3 text-left font-normal text-ctp-text tracking-wider">Labels</th>
+                    </tr>
+                </thead>
+                <tbody id="task-list-body" class="divide-y text-ctp-text divide-ctp-blue/20">
+                    {% if not tasks %}
+                        <tr>
+                            <td colspan="3" class="px-6 pt-20 pb-16 text-center text-ctp-subtext0">
+                                No tasks are registered on the broker.
+                            </td>
+                        </tr>
+                    {% else %}
+                        {% for task in tasks %}
+                            {% include "partial/task_item.html" with context %}
+                        {% endfor %}
+                    {% endif %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+</body>
+</html>

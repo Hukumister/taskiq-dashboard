@@ -1,3 +1,4 @@
+{% from "macros/expected_args.html" import expected_arguments %}
 <!doctype html>
 <html lang="en">
     <head>
@@ -13,7 +14,7 @@
         {% include "partial/header.html" %}
         <main class="container mx-auto px-4 py-8" x-data="{ editing: false }">
             <form
-                hx-post="{{ url_for('Edit schedule', schedule_id=schedule.schedule_id) }}"
+                hx-post="{{ url_for('edit_schedule', schedule_id=schedule.schedule_id) }}"
                 hx-target="#notification-list"
                 hx-swap="beforeend"
             >
@@ -35,7 +36,7 @@
                             <button
                                 type="button"
                                 x-show="!editing"
-                                hx-delete="{{ url_for('Delete schedule', schedule_id=schedule.schedule_id) }}"
+                                hx-delete="{{ url_for('delete_schedule', schedule_id=schedule.schedule_id) }}"
                                 class="px-3 py-1.5 bg-ctp-red rounded cursor-pointer hover:bg-ctp-red-600 transition focus:outline-2 focus:outline-offset-2 focus:outline-ctp-red-500 active:bg-ctp-red-700 text-ctp-base"
                             >
                                 Delete
@@ -135,6 +136,8 @@
                         </div>
                     </div>
                 </section>
+
+                {{ expected_arguments(signature) }}
 
                 <!-- Schedule arguments section -->
                 <section class="p-6 mb-6 bg-ctp-lavender/10 rounded-xl">

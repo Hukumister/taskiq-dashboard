@@ -22,13 +22,13 @@
                 {% if enable_actions %}
                     <button
                         class="px-3 py-1.5 bg-ctp-green rounded cursor-pointer hover:bg-ctp-green-600 transition focus:outline-2 focus:outline-offset-2 focus:outline-ctp-green-500 active:bg-ctp-green-700"
-                        hx-post="{{ url_for('Rerun task', task_id=task.id) }}"
+                        hx-post="{{ url_for('rerun_task_run', task_id=task.id) }}"
                         hx-target="#notification-list"
                         hx-swap="beforeend"
                     >Rerun</button>
                     <a
                         class="px-3 py-1.5 bg-ctp-red rounded cursor-pointer hover:bg-ctp-red-600 transition focus:outline-2 focus:outline-offset-2 focus:outline-ctp-red-500 active:bg-ctp-red-700"
-                        href="{{ url_for('Delete task', task_id=task.id) }}"
+                        href="{{ url_for('delete_task_run', task_id=task.id) }}"
                         type="link"
                     >Delete</a>
                 {% endif %}

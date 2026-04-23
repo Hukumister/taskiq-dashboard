@@ -16,9 +16,7 @@ class TestCleanupService:
     async def _task_exists(session_provider: AsyncPostgresSessionProvider, task_id) -> bool:
         """Helper to check if a task exists in the database."""
         async with session_provider.session() as session:
-            result = await session.execute(
-                sa.select(PostgresTask.id).where(PostgresTask.id == task_id)
-            )
+            result = await session.execute(sa.select(PostgresTask.id).where(PostgresTask.id == task_id))
             return result.scalar_one_or_none() is not None
 
     async def test_when_cleanup_disabled__then_no_tasks_deleted(

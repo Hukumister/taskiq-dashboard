@@ -8,7 +8,14 @@ from fastapi.staticfiles import StaticFiles
 
 from taskiq_dashboard import dependencies
 from taskiq_dashboard.api.middlewares import AccessTokenMiddleware
-from taskiq_dashboard.api.routers import action_router, event_router, schedule_router, system_router, task_router
+from taskiq_dashboard.api.routers import (
+    action_router,
+    event_router,
+    history_router,
+    schedule_router,
+    system_router,
+    task_router,
+)
 from taskiq_dashboard.api.routers.exception_handlers import exception_handler__not_found
 from taskiq_dashboard.domain.dto.task_status import TaskStatus
 from taskiq_dashboard.domain.repositories import AbstractTaskRepository
@@ -81,6 +88,7 @@ def get_application(root_path: str = '') -> fastapi.FastAPI:
     )
     app.include_router(router=system_router)
     app.include_router(router=task_router)
+    app.include_router(router=history_router)
     app.include_router(router=event_router)
     app.include_router(router=action_router)
     app.include_router(router=schedule_router)

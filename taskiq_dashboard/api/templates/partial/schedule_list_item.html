@@ -1,6 +1,6 @@
 <tr id="schedule-list-item-{{ schedule.schedule_id }}" class="group whitespace-nowrap text-sm">
     <td class="px-6 py-4 group-hover:bg-ctp-blue-100/20 w-min">
-        <a href="{{ url_for('Schedule details view', schedule_id=schedule.schedule_id) }}" class="text-ctp-text hover:text-ctp-subtext0 block w-full h-full">
+        <a href="{{ url_for('schedule_details_view', schedule_id=schedule.schedule_id) }}" class="text-ctp-text hover:text-ctp-subtext0 block w-full h-full">
             {{ schedule.schedule_id }}
         </a>
     </td>

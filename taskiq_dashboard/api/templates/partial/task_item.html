@@ -1,0 +1,30 @@
+<tr id="task-list-item-{{ task.name }}"
+    data-href="{{ url_for('task_run_form', task_name=task.name) }}"
+    class="group whitespace-nowrap text-sm cursor-pointer">
+    <td class="px-6 py-4 whitespace-nowrap text-sm group-hover:bg-ctp-blue-100/20 w-min">
+        <a href="{{ url_for('task_run_form', task_name=task.name) }}"
+           class="text-ctp-text hover:text-ctp-subtext0 block w-full h-full">
+            {{ task.name }}
+        </a>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm group-hover:bg-ctp-blue-100/20 w-auto">
+        {% if task.signature %}
+            {{ task.signature }}
+        {% else %}
+            -
+        {% endif %}
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm group-hover:bg-ctp-blue-100/20 w-full">
+        {% if task.labels %}
+            <div class="flex flex-wrap gap-1">
+                {% for key, value in task.labels.items() %}
+                    <span class="inline-flex items-center rounded bg-ctp-surface0 px-2 py-0.5 text-xs text-ctp-subtext1">
+                        {{ key }}={{ value }}
+                    </span>
+                {% endfor %}
+            </div>
+        {% else %}
+            -
+        {% endif %}
+    </td>
+</tr>

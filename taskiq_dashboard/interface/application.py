@@ -1,3 +1,6 @@
+import asyncio
+import signal
+import sys
 import typing as tp
 
 from pydantic import SecretStr
@@ -72,7 +75,15 @@ class TaskiqDashboard:
                 'Please install it with "pip install taskiq-dashboard[server]".',
             ) from e
 
-        await Server(
+        server = Server(
             wrap_asgi_with_proxy_headers(self.application, trusted_hosts=self._trusted_hosts),
             **self._server_kwargs,  # ty: ignore[invalid-argument-type]
-        ).serve()
+        )
+
+        # Windows event loops don't support add_signal_handler
+        if sys.platform != 'win32':
+            loop = asyncio.get_running_loop()
+            for sig in (signal.SIGINT, signal.SIGTERM):
+                loop.add_signal_handler(sig, server.stop)
+
+        await server.serve()

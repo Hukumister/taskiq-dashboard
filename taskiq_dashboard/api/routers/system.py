@@ -12,7 +12,7 @@ class HealthCheckResponse(BaseModel):
 
 
 @router.get('/liveness', name='liveness', summary='Проверка работоспособности сервиса')
-async def get_liveness() -> HealthCheckResponse:
+async def handle_liveness() -> HealthCheckResponse:
     return HealthCheckResponse(
         status='alive',
         app_name='taskiq dashboard',
@@ -20,7 +20,7 @@ async def get_liveness() -> HealthCheckResponse:
 
 
 @router.get('/readiness', name='readiness', summary='Проверка готовности обслуживать входящие запросы')
-async def get_readiness() -> HealthCheckResponse:
+async def handle_readiness() -> HealthCheckResponse:
     # TODO: maybe add "select 1" to database
     return HealthCheckResponse(
         status='ready',

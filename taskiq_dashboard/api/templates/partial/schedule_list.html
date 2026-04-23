@@ -7,7 +7,7 @@
 {% set _next_offset = _offset + schedules|length %}
 {% if schedules|length >= _limit %}
     <tr class="infinite-sentinel"
-        hx-get="{{ url_for('Schedule list view') }}?limit={{ _limit }}&offset={{ _next_offset }}"
+        hx-get="{{ url_for('schedule_list_view') }}?limit={{ _limit }}&offset={{ _next_offset }}"
         hx-trigger="revealed"
         hx-swap="beforeend"
         hx-target="#schedule-list-body"></tr>

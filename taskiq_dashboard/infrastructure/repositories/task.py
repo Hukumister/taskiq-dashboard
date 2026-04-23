@@ -34,12 +34,7 @@ class TaskRepository(AbstractTaskRepository):
         if name and len(name) > 1:
             search_pattern = f'%{name.strip()}%'
             id_text = sa.cast(self.task.id, sa.String)
-            query = query.where(
-                sa.or_(
-                    self.task.name.ilike(search_pattern),
-                    id_text.ilike(search_pattern)
-                )
-            )
+            query = query.where(sa.or_(self.task.name.ilike(search_pattern), id_text.ilike(search_pattern)))
         if status is not None:
             query = query.where(self.task.status == status.value)
         if sort_by:

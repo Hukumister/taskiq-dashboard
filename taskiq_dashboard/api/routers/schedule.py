@@ -11,7 +11,9 @@ from fastapi.responses import HTMLResponse, Response
 from starlette import status
 from taskiq import ScheduledTask
 
+from taskiq_dashboard.api.helpers import create_error_notification, get_signature
 from taskiq_dashboard.api.templates import jinja_templates
+from taskiq_dashboard.domain.dto.signature import TaskSignature
 
 
 if tp.TYPE_CHECKING:
@@ -26,7 +28,6 @@ router = fastapi.APIRouter(
     tags=['Schedule'],
     route_class=dishka_fastapi.DishkaRoute,
 )
-logger = getLogger(__name__)
 
 
 class ScheduleFilter(pydantic.BaseModel):
@@ -36,7 +37,7 @@ class ScheduleFilter(pydantic.BaseModel):
 
 @router.get(
     '/',
-    name='Schedule list view',
+    name='schedule_list_view',
     response_class=HTMLResponse,
 )
 async def handle_schedule_list(
@@ -90,7 +91,7 @@ async def handle_schedule_list(
 
 @router.get(
     '/{schedule_id}',
-    name='Schedule details view',
+    name='schedule_details_view',
     response_class=HTMLResponse,
 )
 async def handle_schedule_details(
@@ -108,18 +109,25 @@ async def handle_schedule_details(
             },
             status_code=status.HTTP_404_NOT_FOUND,
         )
+    broker = request.app.state.broker
     for schedule_source in scheduler.sources:
         for schedule in await schedule_source.get_schedules():
             if schedule.schedule_id == str(schedule_id):
                 schedule_dict = schedule.model_dump()
                 schedule_dict['source'] = schedule_source.__class__.__name__
                 schedule_dict['source_id'] = id(schedule_source)
+                signature = TaskSignature()
+                if broker is not None:
+                    task = broker.find_task(schedule.task_name)
+                    if task is not None:
+                        signature = get_signature(task)
                 return jinja_templates.TemplateResponse(
                     request,
                     name='schedule_details.html',
                     context={
                         'request': request,
                         'schedule': schedule_dict,
+                        'signature': signature,
                     },
                     status_code=status.HTTP_200_OK,
                 )
@@ -136,7 +144,7 @@ async def handle_schedule_details(
 
 @router.delete(
     '/{schedule_id}',
-    name='Delete schedule',
+    name='delete_schedule',
 )
 async def handle_schedule_delete(
     request: fastapi.Request,
@@ -159,28 +167,19 @@ async def handle_schedule_delete(
                 )
             return Response(
                 status_code=status.HTTP_200_OK,
-                headers={'HX-Redirect': str(request.url_for('Schedule list view'))},
+                headers={'HX-Redirect': str(request.url_for('schedule_list_view'))},
             )
 
     logger.warning('Schedule with id %s not found for deletion.', schedule_id)
     return Response(
         status_code=status.HTTP_200_OK,
-        headers={'HX-Redirect': str(request.url_for('Schedule list view'))},
-    )
-
-
-def create_error_notification(request: fastapi.Request, message: str) -> Response:
-    return jinja_templates.TemplateResponse(
-        request,
-        'partial/notification.html',
-        {'request': request, 'message': message, 'level': 'error'},
-        status_code=status.HTTP_200_OK,
+        headers={'HX-Redirect': str(request.url_for('schedule_list_view'))},
     )
 
 
 @router.post(
     '/{schedule_id}',
-    name='Edit schedule',
+    name='edit_schedule',
 )
 async def handle_schedule_edit(  # noqa: PLR0911, PLR0913, C901, PLR0912 Too
     request: fastapi.Request,
@@ -248,7 +247,7 @@ async def handle_schedule_edit(  # noqa: PLR0911, PLR0913, C901, PLR0912 Too
                 return create_error_notification(request, 'This schedule source does not support editing schedules.')
             return Response(
                 status_code=status.HTTP_200_OK,
-                headers={'HX-Redirect': str(request.url_for('Schedule details view', schedule_id=schedule_id))},
+                headers={'HX-Redirect': str(request.url_for('schedule_details_view', schedule_id=schedule_id))},
             )
 
     return create_error_notification(request, 'Schedule not found.')

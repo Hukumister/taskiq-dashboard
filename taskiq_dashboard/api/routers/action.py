@@ -1,3 +1,4 @@
+import json
 import typing as tp
 import uuid
 from logging import getLogger
@@ -8,13 +9,13 @@ from dishka.integrations import fastapi as dishka_fastapi
 from fastapi.responses import RedirectResponse, Response
 from starlette import status
 
+from taskiq_dashboard.api.helpers import create_error_notification, get_signature
 from taskiq_dashboard.api.templates import jinja_templates
 from taskiq_dashboard.domain.repositories import AbstractTaskRepository
 
 
 if tp.TYPE_CHECKING:
     from taskiq import AsyncBroker
-
 
 router = fastapi.APIRouter(
     prefix='/actions',
@@ -30,32 +31,55 @@ class BulkTaskRequest(pydantic.BaseModel):
 
 @router.post(
     '/run/{task_name}',
-    name='Kick task',
+    name='run_task',
 )
-async def handle_task_run(
+async def handle_run_task(  # noqa: PLR0911 Too
     request: fastapi.Request,
     task_name: str,
+    args: tp.Annotated[str, fastapi.Form()] = '[]',
+    kwargs: tp.Annotated[str, fastapi.Form()] = '{}',
 ) -> Response:
     broker: AsyncBroker | None = request.app.state.broker
     if broker is None:
-        logger.error('No broker configured to handle task kick', extra={'task_name': task_name})
-        return Response(status_code=status.HTTP_400_BAD_REQUEST, content=b'No broker configured')
+        return create_error_notification(request, 'No broker configured.')
 
     task = broker.find_task(task_name)
-    if not task:
-        logger.error('Task not found in broker', extra={'task_name': task_name})
-        return Response(status_code=status.HTTP_404_NOT_FOUND, content=b'Task not found')
+    if task is None:
+        return create_error_notification(request, f'Task "{task_name}" is not registered.')
 
-    await task.kicker().with_task_id(str(uuid.uuid4())).kiq()
+    try:
+        parsed_args = json.loads(args)
+        if not isinstance(parsed_args, list):
+            return create_error_notification(request, 'Positional arguments must be a JSON array, e.g. [1, "two"].')
+    except json.JSONDecodeError:
+        return create_error_notification(request, 'Invalid JSON in "Positional arguments".')
+    try:
+        parsed_kwargs = json.loads(kwargs)
+        if not isinstance(parsed_kwargs, dict):
+            return create_error_notification(request, 'Keyword arguments must be a JSON object, e.g. {"key": "value"}.')
+    except json.JSONDecodeError:
+        return create_error_notification(request, 'Invalid JSON in "Keyword arguments".')
 
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
+    missing = [
+        param.name
+        for index, param in enumerate(get_signature(task).params)
+        if param.required and index >= len(parsed_args) and param.name not in parsed_kwargs
+    ]
+    if missing:
+        return create_error_notification(request, f'Missing required arguments: {", ".join(missing)}.')
+
+    await task.kicker().with_task_id(str(uuid.uuid4())).kiq(*parsed_args, **parsed_kwargs)
+    return Response(
+        status_code=status.HTTP_200_OK,
+        headers={'HX-Redirect': str(request.url_for('task_history_view'))},
+    )
 
 
 @router.post(
     '/rerun/{task_id}',
-    name='Rerun task',
+    name='rerun_task_run',
 )
-async def handle_task_rerun(
+async def handle_rerun_task_run(
     request: fastapi.Request,
     task_id: uuid.UUID,
     repository: dishka_fastapi.FromDishka[AbstractTaskRepository],
@@ -92,7 +116,7 @@ async def handle_task_rerun(
             'message': (
                 f"""
                 Task rerun started with ID
-                <a class="underline hover:ctp-text-lavander" href="/tasks/{new_task_id}">
+                <a class="underline hover:ctp-text-lavander" href="/history/{new_task_id}">
                     {new_task_id}.
                 </a>
                 """
@@ -104,9 +128,9 @@ async def handle_task_rerun(
 
 @router.get(
     '/delete/{task_id}',
-    name='Delete task',
+    name='delete_task_run',
 )
-async def handle_task_delete(
+async def handle_delete_task_run(
     request: fastapi.Request,
     task_id: uuid.UUID,
     repository: dishka_fastapi.FromDishka[AbstractTaskRepository],
@@ -121,9 +145,9 @@ async def handle_task_delete(
 
 @router.post(
     '/bulk/rerun',
-    name='Bulk rerun tasks',
+    name='bulk_rerun_task_runs',
 )
-async def handle_bulk_task_rerun(
+async def handle_bulk_rerun_task_runs(
     request: fastapi.Request,
     body: BulkTaskRequest,
     repository: dishka_fastapi.FromDishka[AbstractTaskRepository],
@@ -192,9 +216,9 @@ async def handle_bulk_task_rerun(
 
 @router.post(
     '/bulk/delete',
-    name='Bulk delete tasks',
+    name='bulk_delete_task_runs',
 )
-async def handle_bulk_task_delete(
+async def handle_bulk_delete_task_runs(
     _: fastapi.Request,
     body: BulkTaskRequest,
     repository: dishka_fastapi.FromDishka[AbstractTaskRepository],
