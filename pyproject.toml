@@ -1,5 +1,5 @@
 [project]
-name = "taskiq-dashboard"
+name = "taskiq-dashboard-hukuma"
 description = "An interactive dashboard for monitoring and managing Taskiq tasks."
 readme = "README.md"
 license = "MIT"
