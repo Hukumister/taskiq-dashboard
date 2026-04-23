@@ -178,3 +178,5 @@ conf/.env
 # Project specific ignores
 node_modules/
 taskiq_dashboard.db
+
+.idea/
