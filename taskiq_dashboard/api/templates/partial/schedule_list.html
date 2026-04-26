@@ -1,5 +1,5 @@
 {% for schedule in schedules %}
-    {% include "partial/schedule_list_item.html" with context %}
+    {% include "partial/schedule_item.html" with context %}
 {% endfor %}
 
 {% set _limit = limit|default(30) %}

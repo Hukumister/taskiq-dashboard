@@ -9,7 +9,7 @@ from taskiq_dashboard.infrastructure import get_settings
 
 class AccessTokenMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next: tp.Callable[[Request], tp.Awaitable[Response]]) -> Response:
-        if not request.url.path.startswith('/api/'):
+        if not request.scope['path'].startswith('/api/'):
             return await call_next(request)
 
         token = request.headers.get('access-token')

@@ -1,26 +1,11 @@
-{% for task in results %}
-    {% include "partial/task_list_item.html" with context %}
+{% for task in tasks %}
+    {% include "partial/task_item.html" with context %}
 {% endfor %}
 
-{% if not results %}
+{% if not tasks %}
     <tr>
-        <td colspan="7" class="px-6 pt-20 pb-16 text-center text-ctp-subtext0">
-            {% if q or status != 'null' %}
-                No tasks for this filters
-            {% else %}
-                No tasks created yet
-            {% endif %}
+        <td colspan="3" class="px-6 pt-20 pb-16 text-center text-ctp-subtext0">
+            No tasks are registered on the broker.
         </td>
     </tr>
-{% endif %}
-
-{% set _limit = limit|default(30) %}
-{% set _offset = offset|default(0) %}
-{% set _next_offset = _offset + results|length %}
-{% if results|length >= _limit %}
-    <tr class="infinite-sentinel"
-        hx-get="{{ url_for('task_history_view') }}?status={{ status }}&q={{ q }}&sort_by={{ sort_by }}&sort_order={{ sort_order }}&limit={{ _limit }}&offset={{ _next_offset }}"
-        hx-trigger="revealed"
-        hx-swap="beforeend"
-        hx-target="#task-list-body"></tr>
 {% endif %}

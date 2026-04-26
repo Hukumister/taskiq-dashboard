@@ -72,11 +72,13 @@ async def handle_search_tasks(
         sort_order=query.sort_order,
     )
     headers: dict[str, str] = {}
-    template_name = 'history.html'
+    template_name = 'task_runs_page.html'
     if hx_request:
-        headers = {
-            'HX-Push-Url': '/?' + urlencode(query.model_dump(exclude={'limit', 'offset'})),
-        }
+        push_url = request.url_for('task_history_view').path
+        query_string = urlencode(query.model_dump(exclude={'limit', 'offset'}))
+        if query_string:
+            push_url = f'{push_url}?{query_string}'
+        headers = {'HX-Push-Url': push_url}
         template_name = 'partial/task_list.html'
     return jinja_templates.TemplateResponse(
         request,
@@ -107,7 +109,7 @@ async def handle_task_details(
     if task is None:
         return jinja_templates.TemplateResponse(
             request,
-            name='404.html',
+            name='not_found_page.html',
             context={
                 'request': request,
                 'message': f'Task with ID {task_id} not found',
@@ -119,7 +121,7 @@ async def handle_task_details(
         result_json = json.dumps(task.result, indent=2, ensure_ascii=False)
     return jinja_templates.TemplateResponse(
         request,
-        name='task_details.html',
+        name='task_run_details_page.html',
         context={
             'request': request,
             'task': task,

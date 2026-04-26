@@ -11,17 +11,21 @@
                         </div>
                     </div>
                 </a>
-                {% set _path = request.url.path %}
+                {% set _is_tasks = request.url.path.startswith(url_for('task_list_view').path) %}
+                {% set _is_schedules = request.url.path.startswith(url_for('schedule_list_view').path) %}
+                {% set _is_history = not _is_tasks and not _is_schedules %}
+
                 {% set _nav_base = "transition-colors font-medium" %}
                 {% set _nav_active = "text-ctp-mauve" %}
                 {% set _nav_idle = "text-ctp-text hover:text-ctp-mauve" %}
+
                 <nav class="hidden sm:flex items-center gap-6 ml-4 mt-2">
                     <a href="{{ url_for('task_history_view') }}"
-                       class="{{ _nav_base }} {{ _nav_active if _path == '/' or _path.startswith('/history') else _nav_idle }}">History</a>
+                       class="{{ _nav_base }} {{ _nav_active if _is_history else _nav_idle }}">History</a>
                     <a href="{{ url_for('task_list_view') }}"
-                       class="{{ _nav_base }} {{ _nav_active if _path.startswith('/tasks') else _nav_idle }}">Tasks</a>
+                       class="{{ _nav_base }} {{ _nav_active if _is_tasks else _nav_idle }}">Tasks</a>
                     <a href="{{ url_for('schedule_list_view') }}"
-                       class="{{ _nav_base }} {{ _nav_active if _path.startswith('/schedules') else _nav_idle }}">Schedulers</a>
+                       class="{{ _nav_base }} {{ _nav_active if _is_schedules else _nav_idle }}">Schedulers</a>
                 </nav>
             </div>
             <div class="flex items-center gap-4">

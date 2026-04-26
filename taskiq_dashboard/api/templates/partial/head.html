@@ -30,14 +30,14 @@
         };
         try {
             const isAuto = localStorage.getItem("theme-auto") === "true";
-            const t = localStorage.getItem("theme");
-            if (!t || !THEMES[t] || isAuto) {
-                t = matchMedia("(prefers-color-scheme: dark)").matches ? "mocha" : "latte";
+            let theme = localStorage.getItem("theme");
+            if (!theme || !THEMES[theme] || isAuto) {
+                theme = matchMedia("(prefers-color-scheme: dark)").matches ? "mocha" : "latte";
             }
-            document.documentElement.className = t;
-            document.documentElement.style.colorScheme = t === "latte" ? "light" : "dark";
+            document.documentElement.className = theme;
+            document.documentElement.style.colorScheme = theme === "latte" ? "light" : "dark";
             document.documentElement.setAttribute("data-theme-ready", "true");
-            window.__theme = t;
+            window.__theme = theme;
         } catch (_) {}
     })();
 </script>

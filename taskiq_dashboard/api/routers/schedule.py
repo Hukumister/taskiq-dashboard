@@ -49,7 +49,7 @@ async def handle_schedule_list(
     if not scheduler:
         return jinja_templates.TemplateResponse(
             request,
-            name='404.html',
+            name='not_found_page.html',
             context={
                 'request': request,
                 'message': 'Scheduler not configured.',
@@ -68,12 +68,14 @@ async def handle_schedule_list(
             break
 
     headers: dict[str, str] = {}
-    template_name = 'schedule_page.html'
+    template_name = 'schedules_page.html'
     if hx_request:
         template_name = 'partial/schedule_list.html'
-        headers = {
-            'HX-Push-Url': '/schedules/?' + urlencode(query.model_dump(exclude={'limit', 'offset'})),
-        }
+        push_url = request.url_for('schedule_list_view').path
+        query_string = urlencode(query.model_dump(exclude={'limit', 'offset'}))
+        if query_string:
+            push_url = f'{push_url}?{query_string}'
+        headers = {'HX-Push-Url': push_url}
 
     return jinja_templates.TemplateResponse(
         request,
@@ -102,7 +104,7 @@ async def handle_schedule_details(
     if not scheduler:
         return jinja_templates.TemplateResponse(
             request,
-            name='404.html',
+            name='not_found_page.html',
             context={
                 'request': request,
                 'message': 'Scheduler not configured.',
@@ -123,7 +125,7 @@ async def handle_schedule_details(
                         signature = get_signature(task)
                 return jinja_templates.TemplateResponse(
                     request,
-                    name='schedule_details.html',
+                    name='schedule_details_page.html',
                     context={
                         'request': request,
                         'schedule': schedule_dict,
@@ -133,7 +135,7 @@ async def handle_schedule_details(
                 )
     return jinja_templates.TemplateResponse(
         request,
-        name='404.html',
+        name='not_found_page.html',
         context={
             'request': request,
             'message': 'Schedule not found.',

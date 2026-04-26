@@ -108,6 +108,7 @@ async def handle_rerun_task_run(
         )
     )
 
+    details_url = request.url_for('task_details_view', task_id=new_task_id).path
     return jinja_templates.TemplateResponse(
         request,
         'partial/notification.html',
@@ -116,7 +117,7 @@ async def handle_rerun_task_run(
             'message': (
                 f"""
                 Task rerun started with ID
-                <a class="underline hover:ctp-text-lavander" href="/history/{new_task_id}">
+                <a class="underline hover:ctp-text-lavander" href="{details_url}">
                     {new_task_id}.
                 </a>
                 """
@@ -136,9 +137,8 @@ async def handle_delete_task_run(
     repository: dishka_fastapi.FromDishka[AbstractTaskRepository],
 ) -> Response:
     await repository.delete_task(task_id)
-    mount_prefix = request.url.path.rsplit('/actions/delete/', 1)[0]
     return RedirectResponse(
-        url=mount_prefix or '/',
+        url=request.url_for('task_history_view').path,
         status_code=status.HTTP_307_TEMPORARY_REDIRECT,
     )
 

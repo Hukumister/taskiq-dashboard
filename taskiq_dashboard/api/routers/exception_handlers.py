@@ -10,6 +10,6 @@ async def exception_handler__not_found(
 ) -> HTMLResponse:
     return jinja_templates.TemplateResponse(
         request,
-        '404.html',
+        'not_found_page.html',
         {'request': request},
     )

@@ -26,7 +26,7 @@ async def handle_list_registered_tasks(
     if broker is None:
         return jinja_templates.TemplateResponse(
             request,
-            name='404.html',
+            name='not_found_page.html',
             context={
                 'request': request,
                 'message': 'Broker not configured.',
@@ -43,7 +43,7 @@ async def handle_list_registered_tasks(
     ]
     return jinja_templates.TemplateResponse(
         request,
-        'tasks.html',
+        'tasks_page.html',
         {
             'request': request,
             'tasks': tasks,
@@ -64,7 +64,7 @@ async def handle_task_run_form(
     if broker is None:
         return jinja_templates.TemplateResponse(
             request,
-            name='404.html',
+            name='not_found_page.html',
             context={'request': request, 'message': 'Broker not configured.'},
             status_code=status.HTTP_404_NOT_FOUND,
         )
@@ -72,13 +72,13 @@ async def handle_task_run_form(
     if task is None:
         return jinja_templates.TemplateResponse(
             request,
-            name='404.html',
+            name='not_found_page.html',
             context={'request': request, 'message': f'Task "{task_name}" is not registered'},
             status_code=status.HTTP_404_NOT_FOUND,
         )
     return jinja_templates.TemplateResponse(
         request,
-        'task_run.html',
+        'task_details_page.html',
         {
             'request': request,
             'task_name': task_name,
