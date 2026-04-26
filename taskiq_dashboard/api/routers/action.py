@@ -68,10 +68,25 @@ async def handle_run_task(  # noqa: PLR0911 Too
     if missing:
         return create_error_notification(request, f'Missing required arguments: {", ".join(missing)}.')
 
-    await task.kicker().with_task_id(str(uuid.uuid4())).kiq(*parsed_args, **parsed_kwargs)
-    return Response(
+    new_task_id = str(uuid.uuid4())
+    await task.kicker().with_task_id(new_task_id).kiq(*parsed_args, **parsed_kwargs)
+
+    details_url = request.url_for('task_details_view', task_id=new_task_id).path
+    return jinja_templates.TemplateResponse(
+        request,
+        'partial/notification.html',
+        {
+            'request': request,
+            'message': (
+                f"""
+                Task started with ID
+                <a class="underline hover:ctp-text-lavander" href="{details_url}">
+                    {new_task_id}.
+                </a>
+                """
+            ),
+        },
         status_code=status.HTTP_200_OK,
-        headers={'HX-Redirect': str(request.url_for('task_history_view'))},
     )
 
 
