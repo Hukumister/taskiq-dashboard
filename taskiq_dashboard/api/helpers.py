@@ -6,6 +6,7 @@ import fastapi
 from fastapi.responses import Response
 from starlette import status
 from taskiq import AsyncTaskiqDecoratedTask
+from taskiq_dependencies.dependency import Dependency
 
 from taskiq_dashboard.api.templates import jinja_templates
 from taskiq_dashboard.domain.dto.signature import FieldWidget, SignatureField, TaskSignature
@@ -61,6 +62,9 @@ def get_signature(task: AsyncTaskiqDecoratedTask) -> TaskSignature:
     has_var_kwargs = False
 
     for parameter in signature.parameters.values():
+        if isinstance(parameter.default, Dependency):
+            continue
+
         if parameter.kind is inspect.Parameter.VAR_POSITIONAL:
             has_var_args = True
             preview_parts.append(f'*{parameter.name}')

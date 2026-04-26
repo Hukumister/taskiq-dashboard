@@ -1870,7 +1870,7 @@ wheels = [
 ]
 
 [[package]]
-name = "taskiq-dashboard"
+name = "taskiq-dashboard-hukuma"
 source = { editable = "." }
 dependencies = [
     { name = "aiosqlite" },

@@ -10,6 +10,7 @@ async def main() -> None:
     dashboard = TaskiqDashboard(
         api_token=settings.api.token.get_secret_value(),
         storage_type=storage_type,
+        root_path='/admin',
         database_dsn=(
             settings.postgres.dsn.get_secret_value()
             if storage_type == 'postgres'
